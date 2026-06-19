@@ -7,7 +7,7 @@ works on a fresh native-install machine.
 
 ```
 Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3)
-20:45:17 | 🧠 ███░░░░░░░ 32% | 5h ●●◐○○ 6% ↻2h15m | 7d ●◐○○○○○ 15% ↻5d13h │ $0.61 ⏱ 2m
+20:45:17 | 🧠 ███░░░░░░░ 32% | 5h ●●◕○○ 6% ↻2h15m | 7d ●◑○○○○○ 15% ↻5d14h │ $0.61 ⏱ 2m
 ```
 
 **Line 1** — model, optional reasoning effort, working dir, optional kubectl
@@ -20,8 +20,10 @@ and 7-day rate-limit windows, then session cost and duration.
 
 Each window is a row of dots — **5 dots for the 5-hour window, 7 for the 7-day**:
 
-- **Fill = time elapsed** in the window. One dot = one hour (5h) or one day (7d);
-  the unit in progress shows as a half dot `◐`, the rest as `○`.
+- **Fill = time elapsed** in the window. One dot = one hour (5h) or one day (7d).
+  The unit in progress fills by quarter — `◔ ◑ ◕` (nearest ¼) — so you can read
+  partial progress (a real win on the 7-day, where each dot spans a whole day);
+  remaining units are `○`.
 - **Color = burn pace** — your usage vs. how far through the window you are:
   - **blue** — used ≤ elapsed: on or under pace, plenty left
   - **yellow** — used ≤ 1.5× elapsed: running tight
@@ -79,7 +81,9 @@ Override the dot glyphs via environment variables:
 | Var | Default | Meaning |
 |-----|---------|---------|
 | `CC_SL_FULL`  | `●` | elapsed unit |
-| `CC_SL_HALF`  | `◐` | in-progress unit |
+| `CC_SL_Q1`    | `◔` | in-progress unit, ~¼ |
+| `CC_SL_HALF`  | `◑` | in-progress unit, ~½ |
+| `CC_SL_Q3`    | `◕` | in-progress unit, ~¾ |
 | `CC_SL_EMPTY` | `○` | remaining unit |
 
 ## How it works
