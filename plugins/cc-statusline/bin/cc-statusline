@@ -82,7 +82,8 @@ BLUE=$'\033[94m'; YELLOW=$'\033[33m'; RED=$'\033[31m'; GREEN=$'\033[32m'
 DIM=$'\033[2;37m'; RESET=$'\033[0m'
 ORANGE=$'\033[38;5;173m'; EFFORTC=$'\033[38;5;179m'; CYAN=$'\033[1;36m'
 K8S=$'\033[2;34m'; GITC=$'\033[31m'; GITN=$'\033[2;33m'; TIMEC=$'\033[1;33m'
-FULL=${CC_SL_FULL:-●}; HALF=${CC_SL_HALF:-◐}; EMPTY=${CC_SL_EMPTY:-○}
+FULL=${CC_SL_FULL:-●}; EMPTY=${CC_SL_EMPTY:-○}
+Q1=${CC_SL_Q1:-◔}; HALF=${CC_SL_HALF:-◑}; Q3=${CC_SL_Q3:-◕}
 
 is_set() { [ -n "$1" ] && [ "$1" != "null" ]; }
 
@@ -114,17 +115,21 @@ fi
 # --- line 2 -------------------------------------------------------------------
 round() { printf '%.0f' "$1" 2>/dev/null; }
 
-fmt_remaining() { # $1=sec $2=daily(1/0)
-  local sec=$1 daily=$2 tmin h m d rh
+fmt_remaining() { # $1=sec $2=daily(1/0) — rounds to nearest unit
+  local sec=$1 daily=$2 h m d rh
   [ "$sec" -lt 0 ] && sec=0
-  tmin=$(( sec / 60 ))
   if [ "$daily" -eq 1 ]; then
-    h=$(( tmin / 60 )); d=$(( h / 24 )); rh=$(( h % 24 ))
-    if [ "$d" -gt 0 ]; then printf '%dd%dh' "$d" "$rh"; else printf '%dh' "$rh"; fi
-  else
-    h=$(( tmin / 60 )); m=$(( tmin % 60 ))
-    if [ "$h" -gt 0 ]; then printf '%dh%dm' "$h" "$m"; else printf '%dm' "$m"; fi
+    h=$(( (sec + 1800) / 3600 ))           # nearest hour
+    d=$(( h / 24 )); rh=$(( h % 24 ))
+    if [ "$d" -gt 0 ]; then
+      if [ "$rh" -gt 0 ]; then printf '%dd%dh' "$d" "$rh"; else printf '%dd' "$d"; fi
+      return
+    fi
+    # <1 day left: fall through to h/m so we never show "0h"
   fi
+  m=$(( (sec + 30) / 60 ))                  # nearest minute
+  h=$(( m / 60 )); m=$(( m % 60 ))
+  if [ "$h" -gt 0 ]; then printf '%dh%dm' "$h" "$m"; else printf '%dm' "$m"; fi
 }
 
 render_window() { # $1=label $2=windowSec $3=units $4=daily $5=used $6=reset
@@ -138,8 +143,19 @@ render_window() { # $1=label $2=windowSec $3=units $4=daily $5=used $6=reset
   [ "$elapsed" -gt "$win" ] && elapsed=$win
   local full=$(( elapsed / unit ))
   [ "$full" -gt "$units" ] && full=$units
-  local half=0; [ "$full" -lt "$units" ] && half=1
-  local empty=$(( units - full - half ))
+  # In-progress unit reflects the actual fraction, rounded to the nearest quarter.
+  local partial=""
+  if [ "$full" -lt "$units" ]; then
+    local q=$(( ( (elapsed - full * unit) * 4 + unit / 2 ) / unit ))
+    case "$q" in
+      1) partial="$Q1" ;;
+      2) partial="$HALF" ;;
+      3) partial="$Q3" ;;
+      4) full=$(( full + 1 )) ;;
+    esac
+  fi
+  local pcount=0; [ -n "$partial" ] && pcount=1
+  local empty=$(( units - full - pcount ))
   local col=$DIM pct=""
   if is_set "$used"; then
     local u; u=$(round "$used"); u=${u:-0}
@@ -150,7 +166,7 @@ render_window() { # $1=label $2=windowSec $3=units $4=daily $5=used $6=reset
   fi
   local dots="" i=0
   while [ $i -lt $full ]; do dots+="$FULL"; i=$((i+1)); done
-  [ $half -eq 1 ] && dots+="$HALF"
+  [ -n "$partial" ] && dots+="$partial"
   i=0; while [ $i -lt $empty ]; do dots+="$EMPTY"; i=$((i+1)); done
   printf '%s %s%s%s%s %s↻%s%s' "$label" "$col" "$dots" "$RESET" "$pct" "$DIM" "$(fmt_remaining $(( reset - now )) "$daily")" "$RESET"
 }
