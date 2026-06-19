@@ -1,0 +1,14 @@
+{
+  "name": "cc-statusline",
+  "owner": {
+    "name": "AndrewP-GH",
+    "url": "https://github.com/AndrewP-GH"
+  },
+  "plugins": [
+    {
+      "name": "cc-statusline",
+      "source": "./plugins/cc-statusline",
+      "description": "Two-line status line: model/cwd/git/time plus a context bar and 5h/7d rate-limit dots (time-fill, pace color) and session cost. Pure POSIX shell — no node, bun, or jq."
+    }
+  ]
+}
