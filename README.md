@@ -20,17 +20,18 @@ and 7-day rate-limit windows, then session cost and duration.
 
 Each window is a row of dots — **5 dots for the 5-hour window, 7 for the 7-day**:
 
-- **Fill = time elapsed** in the window. One dot = one hour (5h) or one day (7d).
-  The unit in progress fills by quarter — `◔ ◑ ◕` (nearest ¼) — so you can read
-  partial progress (a real win on the 7-day, where each dot spans a whole day);
-  remaining units are `○`.
+- **Fill = usage %** consumed in the window — the dots are a 5- or 7-segment gauge
+  of how much of the limit you've spent. The in-progress dot fills by quarter
+  (`◔ ◑ ◕`, nearest ¼) for sub-dot precision (a real win on the 7-day, where each
+  dot is ~14%); unspent segments are `○`.
 - **Color = burn pace** — your usage vs. how far through the window you are:
   - **blue** — used ≤ elapsed: on or under pace, plenty left
   - **yellow** — used ≤ 1.5× elapsed: running tight
   - **red** — used > 1.5× elapsed: burning too fast to last the window
 - `↻2h15m` is the time until that window resets.
 
-So `5h ●●◐○○ 6%` blue means ~2.5h into the 5-hour window having spent only 6% — fine.
+So `5h ●●◔○○ 44%` red means you've spent 44% of the 5-hour limit but are only ~¼ of
+the way through the window — burning too fast. `5h ●○○○○ 20%` blue: 20% spent, on pace.
 
 ## Install
 
@@ -80,11 +81,11 @@ Override the dot glyphs via environment variables:
 
 | Var | Default | Meaning |
 |-----|---------|---------|
-| `CC_SL_FULL`  | `●` | elapsed unit |
-| `CC_SL_Q1`    | `◔` | in-progress unit, ~¼ |
-| `CC_SL_HALF`  | `◑` | in-progress unit, ~½ |
-| `CC_SL_Q3`    | `◕` | in-progress unit, ~¾ |
-| `CC_SL_EMPTY` | `○` | remaining unit |
+| `CC_SL_FULL`  | `●` | spent segment |
+| `CC_SL_Q1`    | `◔` | in-progress dot, ~¼ |
+| `CC_SL_HALF`  | `◑` | in-progress dot, ~½ |
+| `CC_SL_Q3`    | `◕` | in-progress dot, ~¾ |
+| `CC_SL_EMPTY` | `○` | unspent segment |
 
 ## How it works
 
