@@ -176,7 +176,7 @@ if is_set "$ctx"; then
   cpct=$(round "$ctx"); cpct=${cpct:-0}
   [ "$cpct" -lt 0 ] && cpct=0; [ "$cpct" -gt 100 ] && cpct=100
   filled=$(( (cpct + 5) / 10 )); [ "$filled" -gt 10 ] && filled=10
-  if [ "$cpct" -lt 60 ]; then cc=$GREEN; elif [ "$cpct" -lt 85 ]; then cc=$YELLOW; else cc=$RED; fi
+  if [ "$cpct" -lt 60 ]; then cc=$GREEN; elif [ "$cpct" -le 80 ]; then cc=$YELLOW; else cc=$RED; fi
   bar="" i=0
   while [ $i -lt $filled ]; do bar+="█"; i=$((i+1)); done
   while [ $i -lt 10 ]; do bar+="░"; i=$((i+1)); done
