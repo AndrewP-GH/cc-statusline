@@ -49,12 +49,20 @@ file first). The line appears on the next prompt render. To remove it, run
 
 ### Manual alternative
 
-If you'd rather not use the skill, add this to `~/.claude/settings.json` while the
-plugin is enabled:
+If you'd rather not use the skill, add this to `~/.claude/settings.json` with the
+**absolute path** to the script. The `statusLine` command does not get the plugin's
+`bin/` on `PATH`, so a bare `cc-statusline` would render an empty line. Resolve the
+path first:
+
+```sh
+ls ~/.claude/plugins/marketplaces/*/plugins/cc-statusline/bin/cc-statusline
+```
+
+then:
 
 ```json
 {
-  "statusLine": { "type": "command", "command": "cc-statusline", "padding": 0 }
+  "statusLine": { "type": "command", "command": "bash /ABSOLUTE/PATH/TO/cc-statusline", "padding": 0 }
 }
 ```
 
