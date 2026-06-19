@@ -22,16 +22,16 @@ Each window is a row of dots — **5 dots for the 5-hour window, 7 for the 7-day
 
 - **Fill = usage %** consumed in the window — the dots are a 5- or 7-segment gauge
   of how much of the limit you've spent. The in-progress dot fills by quarter
-  (`◔ ◑ ◕`, nearest ¼) for sub-dot precision (a real win on the 7-day, where each
-  dot is ~14%); unspent segments are `○`.
+  in `◔ ◑ ◕` steps (each part = ¼ of a dot, shown once you've fully consumed it) for
+  sub-dot precision — a real win on the 7-day, where each dot is ~14%; unspent are `○`.
 - **Color = burn pace** — your usage vs. how far through the window you are:
   - **blue** — used ≤ elapsed: on or under pace, plenty left
   - **yellow** — used ≤ 1.5× elapsed: running tight
   - **red** — used > 1.5× elapsed: burning too fast to last the window
 - `↻2h15m` is the time until that window resets.
 
-So `5h ●●◔○○ 44%` red means you've spent 44% of the 5-hour limit but are only ~¼ of
-the way through the window — burning too fast. `5h ●○○○○ 20%` blue: 20% spent, on pace.
+So `5h ●●◑○○ 50%` red means half the 5-hour limit spent but you're well under halfway
+through the window — burning too fast. `5h ●○○○○ 20%` blue: 20% spent, on pace.
 
 ## Install
 

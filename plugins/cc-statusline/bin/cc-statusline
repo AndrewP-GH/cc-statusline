@@ -143,9 +143,10 @@ render_window() { # $1=label $2=windowSec $3=units $4=daily $5=used $6=reset
   [ "$elapsed" -gt "$win" ] && elapsed=$win
   local u; u=$(round "$used"); u=${u:-0}
   [ "$u" -lt 0 ] && u=0; [ "$u" -gt 100 ] && u=100
-  # Dots track usage %, not the clock: fill the window's dots to the nearest quarter.
+  # Dots track usage %, not the clock. Floor to the last fully-consumed quarter so a
+  # part never claims usage you haven't reached (each part = a quarter of one dot).
   local maxq=$(( units * 4 ))
-  local quarters=$(( (u * maxq + 50) / 100 ))
+  local quarters=$(( u * maxq / 100 ))
   [ "$quarters" -gt "$maxq" ] && quarters=$maxq
   local full=$(( quarters / 4 )) rem=$(( quarters % 4 ))
   local partial=""
