@@ -188,7 +188,7 @@ fi
 
 # Time leads line 2, sitting under the model name on line 1.
 line2="${TIMEC}$(date +%T)${RESET}"
-[ -n "$ctxseg" ] && line2="$line2 $ctxseg"
+[ -n "$ctxseg" ] && line2="$line2 | $ctxseg"
 [ -n "$usage" ] && line2="$line2 | $usage"
 [ -n "$stat" ] && line2="$line2 │ $stat"
 
