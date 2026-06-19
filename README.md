@@ -7,7 +7,7 @@ works on a fresh native-install machine.
 
 ```
 Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3)
-20:45:17 ███░░░░░░░ 32% | 5h ●●◐○○ 6% ↻2h15m | 7d ●◐○○○○○ 15% ↻5d13h │ $0.61 ⏱ 2m
+20:45:17 | ███░░░░░░░ 32% | 5h ●●◐○○ 6% ↻2h15m | 7d ●◐○○○○○ 15% ↻5d13h │ $0.61 ⏱ 2m
 ```
 
 **Line 1** — model, optional reasoning effort, working dir, optional kubectl
