@@ -6,15 +6,15 @@ the status JSON Claude Code pipes on stdin, so it runs as a single fast process 
 works on a fresh native-install machine.
 
 ```
-Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3) 20:45:17
-███░░░░░░░ 32% | 5h ●●◐○○ 6% ↻2h15m | 7d ●◐○○○○○ 15% ↻5d13h │ $0.61 ⏱ 2m
+Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3)
+20:45:17 ███░░░░░░░ 32% | 5h ●●◐○○ 6% ↻2h15m | 7d ●◐○○○○○ 15% ↻5d13h │ $0.61 ⏱ 2m
 ```
 
 **Line 1** — model, optional reasoning effort, working dir, optional kubectl
-context, git branch + uncommitted-change count, clock.
+context, git branch + uncommitted-change count.
 
-**Line 2** — context-window bar, then the 5-hour and 7-day rate-limit windows, then
-session cost and duration.
+**Line 2** — clock (sits under the model name), context-window bar, then the 5-hour
+and 7-day rate-limit windows, then session cost and duration.
 
 ## The rate-limit dots
 
