@@ -111,8 +111,6 @@ if [ -n "$cwd" ] && git -C "$cwd" --no-optional-locks -c core.useBuiltinFSMonito
     else line1+=" ${GITC}${br}${RESET}"; fi
   fi
 fi
-line1+=" ${TIMEC}$(date +%T)${RESET}"
-
 # --- line 2 -------------------------------------------------------------------
 round() { printf '%.0f' "$1" 2>/dev/null; }
 
@@ -188,8 +186,10 @@ if is_set "$dur"; then
   fi
 fi
 
-line2="$ctxseg"
-[ -n "$usage" ] && { [ -n "$line2" ] && line2="$line2 | $usage" || line2="$usage"; }
-[ -n "$stat" ] && { [ -n "$line2" ] && line2="$line2 │ $stat" || line2="$stat"; }
+# Time leads line 2, sitting under the model name on line 1.
+line2="${TIMEC}$(date +%T)${RESET}"
+[ -n "$ctxseg" ] && line2="$line2 $ctxseg"
+[ -n "$usage" ] && line2="$line2 | $usage"
+[ -n "$stat" ] && line2="$line2 │ $stat"
 
 printf '%s\n%s\n' "$line1" "$line2"

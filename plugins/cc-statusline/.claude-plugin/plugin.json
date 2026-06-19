@@ -1,6 +1,6 @@
 {
   "name": "cc-statusline",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Two-line status line: model/cwd/git/time plus a context bar and 5h/7d rate-limit dots (time-fill, pace color) and session cost. Pure POSIX shell — no node, bun, or jq.",
   "author": {
     "name": "AndrewP-GH",
