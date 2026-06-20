@@ -9,7 +9,8 @@
 #   dots COLOR = burn pace (used% vs time-elapsed%): blue ok, yellow tight, red too fast
 #   ↻rem       = time left until the window resets
 #
-# Customize via env: CC_SL_FULL CC_SL_HALF CC_SL_EMPTY (dot glyphs).
+# Customize via env: CC_SL_FULL CC_SL_HALF CC_SL_EMPTY (dot glyphs),
+# CC_SL_PACE_FLOOR (used% below which pace color stays blue; default 5).
 
 input=$(cat)
 
@@ -158,9 +159,13 @@ render_window() { # $1=label $2=windowSec $3=units $4=daily $5=used $6=reset
   local pcount=0; [ -n "$partial" ] && pcount=1
   local empty=$(( units - full - pcount ))
   # Color = burn pace: usage % vs the share of the window's time already elapsed.
+  # Just after a reset elapsed≈0, so the ratio explodes and even 1% reads as
+  # "too fast". Below PACE_FLOOR% used you can't exhaust the window regardless of
+  # pace, so stay blue and skip the unstable ratio entirely.
   local col=$DIM pct=""
   if is_set "$used"; then
-    if [ $(( u * win )) -le $(( elapsed * 100 )) ]; then col=$BLUE
+    if [ "$u" -lt "${CC_SL_PACE_FLOOR:-5}" ]; then col=$BLUE
+    elif [ $(( u * win )) -le $(( elapsed * 100 )) ]; then col=$BLUE
     elif [ $(( 2 * u * win )) -le $(( 3 * elapsed * 100 )) ]; then col=$YELLOW
     else col=$RED; fi
     pct=" ${col}${u}%${RESET}"
