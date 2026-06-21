@@ -7,13 +7,13 @@ works on a fresh native-install machine.
 
 ```
 Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3)
-20:45:17 | 🧠 ███░░░░░░░ 32% | 5h ●●◕○○ 6% ↻2h15m | 7d ●◑○○○○○ 15% ↻5d14h │ $0.61 ⏱ 2m
+20:45:17 | ⛁ ███░░░░░░░ 32% | 5h ◔○○○○ 6% ↻2h15m | 7d ●○○○○○○ 15% ↻5d14h │ $0.61 ⏱ 2m
 ```
 
 **Line 1** — model, optional reasoning effort, working dir, optional kubectl
 context, git branch + uncommitted-change count.
 
-**Line 2** — clock (sits under the model name), 🧠 context-window bar, then the 5-hour
+**Line 2** — clock (sits under the model name), ⛁ context-window bar, then the 5-hour
 and 7-day rate-limit windows, then session cost and duration.
 
 ## The rate-limit dots
@@ -28,6 +28,7 @@ Each window is a row of dots — **5 dots for the 5-hour window, 7 for the 7-day
   - **blue** — used ≤ elapsed: on or under pace, plenty left
   - **yellow** — used ≤ 1.5× elapsed: running tight
   - **red** — used > 1.5× elapsed: burning too fast to last the window
+  - **floor** — below `CC_SL_PACE_FLOOR` % used (default 5) the color stays blue regardless of pace: a near-empty window can't be exhausted, and this keeps a just-reset window (elapsed ≈ 0) from false-flagging red
 - `↻2h15m` is the time until that window resets.
 
 So `5h ●●◑○○ 50%` red means half the 5-hour limit spent but you're well under halfway
@@ -71,13 +72,13 @@ then:
 
 ## Requirements
 
-- A POSIX shell, `awk`, `sed`, and `date` — present on macOS and Linux out of the box.
+- A POSIX shell, `awk`, and `date` — present on macOS and Linux out of the box.
 - `git` and `kubectl` are **optional**; their segments appear only when the tool is
   installed and relevant.
 
 ## Customize
 
-Override the dot glyphs via environment variables:
+Override the dot glyphs and the pace-color floor via environment variables:
 
 | Var | Default | Meaning |
 |-----|---------|---------|
@@ -86,6 +87,7 @@ Override the dot glyphs via environment variables:
 | `CC_SL_HALF`  | `◑` | in-progress dot, ~½ |
 | `CC_SL_Q3`    | `◕` | in-progress dot, ~¾ |
 | `CC_SL_EMPTY` | `○` | unspent segment |
+| `CC_SL_PACE_FLOOR` | `5` | used % below which a window's pace color stays blue |
 
 ## How it works
 
