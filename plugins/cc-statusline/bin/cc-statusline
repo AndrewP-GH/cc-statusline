@@ -186,7 +186,7 @@ if is_set "$ctx"; then
   bar="" i=0
   while [ $i -lt $filled ]; do bar+="█"; i=$((i+1)); done
   while [ $i -lt 10 ]; do bar+="░"; i=$((i+1)); done
-  ctxseg="🧠 ${cc}${bar} ${cpct}%${RESET}"
+  ctxseg="⛁ ${cc}${bar} ${cpct}%${RESET}"
 fi
 
 seg5=$(render_window "5h" 18000 5 0 "$fh_used" "$fh_reset")
