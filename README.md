@@ -7,14 +7,14 @@ works on a fresh native-install machine.
 
 ```
 Opus 4.8 [xhigh] ~ ⎈ prod(api) feat/x (+3)
-20:45:17 | ⛁ ███░░░░░░░ 32% | 5h ◔○○○○ 6% ↻2h15m | 7d ●○○○○○○ 15% ↻5d14h │ $0.61 ⏱ 2m
+20:45:17 | ⛁ ███░░░░░░░ 32% | 5h ◔○○○○ 6% ↻2h15m | 7d ●○○○○○○ 15% ↻5d14h │ $0.61 ⏱ 2m | jev 14× ~$0.0031
 ```
 
 **Line 1** — model, optional reasoning effort, working dir, optional kubectl
 context, git branch + uncommitted-change count.
 
 **Line 2** — clock (sits under the model name), ⛁ context-window bar, then the 5-hour
-and 7-day rate-limit windows, then session cost and duration.
+and 7-day rate-limit windows, then session cost and duration, then Jev usage (see below).
 
 ## The rate-limit dots
 
@@ -33,6 +33,16 @@ Each window is a row of dots — **5 dots for the 5-hour window, 7 for the 7-day
 
 So `5h ●●◑○○ 50%` red means half the 5-hour limit spent but you're well under halfway
 through the window — burning too fast. `5h ●○○○○ 20%` blue: 20% spent, on pace.
+
+## Jev usage
+
+When `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY` or `AI_GATEWAY_API_KEY` is set,
+line 2 ends with `jev N× ~$X`: the number of [Jev](https://github.com/shitianfang/jev-use)
+MCP results in this session's transcript and an **estimated** cost — their summed
+`usage.inputTokens` × `CC_SL_JEV_USD_PER_MTOK` (default `0.042` $/1M input tokens;
+output is free). Jev's APIs expose no balance or cost, so this is an estimate.
+Calls made by subagents or the `jev-use hook gate` hook are not in the transcript and
+are not counted.
 
 ## Install
 
@@ -88,6 +98,7 @@ Override the dot glyphs and the pace-color floor via environment variables:
 | `CC_SL_Q3`    | `◕` | in-progress dot, ~¾ |
 | `CC_SL_EMPTY` | `○` | unspent segment |
 | `CC_SL_PACE_FLOOR` | `5` | used % below which a window's pace color stays blue |
+| `CC_SL_JEV_USD_PER_MTOK` | `0.042` | Jev price, $ per 1M input tokens |
 
 ## How it works
 
