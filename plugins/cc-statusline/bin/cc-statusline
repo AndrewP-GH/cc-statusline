@@ -4,13 +4,14 @@
 # optional and only invoked when present.
 #
 # Line 1: model [effort] cwd  ⎈ k8s(ns)  git-branch (+changes)  HH:MM:SS
-# Line 2: context bar | 5h <dots> <used%> ↻rem | 7d <dots> <used%> ↻rem │ $cost ⏱ dur
+# Line 2: context bar | 5h <dots> <used%> ↻rem | 7d <dots> <used%> ↻rem │ $cost ⏱ dur | jev N× ~$est
 #   dots FILL  = usage % consumed (5h: 5 dots, 7d: 7 dots; in-progress dot = quarter steps)
 #   dots COLOR = burn pace (used% vs time-elapsed%): blue ok, yellow tight, red too fast
 #   ↻rem       = time left until the window resets
 #
 # Customize via env: CC_SL_FULL CC_SL_HALF CC_SL_EMPTY (dot glyphs),
-# CC_SL_PACE_FLOOR (used% below which pace color stays blue; default 5).
+# CC_SL_PACE_FLOOR (used% below which pace color stays blue; default 5),
+# CC_SL_JEV_USD_PER_MTOK (Jev input-token price; default 0.042).
 
 input=$(cat)
 
@@ -61,6 +62,7 @@ read_fields() {
       print V[".rate_limits.seven_day.resets_at"]
       print V[".cost.total_cost_usd"]
       print V[".cost.total_duration_ms"]
+      print V[".transcript_path"]
     }'
 }
 
@@ -75,6 +77,7 @@ read_fields() {
   IFS= read -r sd_reset
   IFS= read -r cost
   IFS= read -r dur
+  IFS= read -r transcript
 } < <(read_fields)
 
 now=$(date +%s)
@@ -208,10 +211,24 @@ if is_set "$dur"; then
   fi
 fi
 
+jevseg=""
+if [ -n "$TYPESAFE_API_KEY$OPENROUTER_API_KEY$AI_GATEWAY_API_KEY" ]; then
+  jevseg=$({ [ -r "$transcript" ] && grep -F inputTokens "$transcript"; } | awk -v rate="${CC_SL_JEV_USD_PER_MTOK:-0.042}" '
+    /^\{"parentUuid"/ && /"type":"tool_result"/ {
+      s = $0; i = index(s, "\"toolUseResult\""); if (i) s = substr(s, 1, i - 1)
+      while (match(s, /inputTokens[\\"]*:[ ]*[0-9]+/)) {
+        m = substr(s, RSTART, RLENGTH); sub(/.*[^0-9]/, "", m)
+        tok += m; n++; s = substr(s, RSTART + RLENGTH) }
+    }
+    END { c = tok * rate / 1000000; if (n && c < 0.00005) printf "jev %d× <$0.0001", n; else printf "jev %d× ~$%.4f", n, c }')
+  jevseg="${DIM}${jevseg}${RESET}"
+fi
+
 # Time leads line 2, sitting under the model name on line 1.
 line2="${TIMEC}$(date +%T)${RESET}"
 [ -n "$ctxseg" ] && line2="$line2 | $ctxseg"
 [ -n "$usage" ] && line2="$line2 | $usage"
 [ -n "$stat" ] && line2="$line2 │ $stat"
+[ -n "$jevseg" ] && line2="$line2 | $jevseg"
 
 printf '%s\n%s\n' "$line1" "$line2"
