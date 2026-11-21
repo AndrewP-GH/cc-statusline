@@ -214,13 +214,13 @@ fi
 jevseg=""
 if [ -n "$TYPESAFE_API_KEY$OPENROUTER_API_KEY$AI_GATEWAY_API_KEY" ]; then
   jevseg=$({ [ -r "$transcript" ] && grep -F inputTokens "$transcript"; } | awk -v rate="${CC_SL_JEV_USD_PER_MTOK:-0.042}" '
-    /"type":"tool_result"/ && !/^\{"type":"queue-operation"/ {
+    /^\{"parentUuid"/ && /"type":"tool_result"/ {
       s = $0; i = index(s, "\"toolUseResult\""); if (i) s = substr(s, 1, i - 1)
       while (match(s, /inputTokens[\\"]*:[ ]*[0-9]+/)) {
         m = substr(s, RSTART, RLENGTH); sub(/.*[^0-9]/, "", m)
         tok += m; n++; s = substr(s, RSTART + RLENGTH) }
     }
-    END { printf "jev %d× ~$%.4f", n, tok * rate / 1000000 }')
+    END { c = tok * rate / 1000000; if (n && c < 0.00005) printf "jev %d× <$0.0001", n; else printf "jev %d× ~$%.4f", n, c }')
   jevseg="${DIM}${jevseg}${RESET}"
 fi
 
